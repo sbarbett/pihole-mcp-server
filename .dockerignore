@@ -1,0 +1,11 @@
+.git/
+.venv/
+__pycache__/
+.cursor/
+.env
+img/
+.gitignore
+LICENSE
+README.md
+setup.sh
+.python-version 

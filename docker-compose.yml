@@ -1,0 +1,10 @@
+---
+services:
+  pihole-mcp:
+    image: sbarbett/pihole-mcp-server:latest
+    ports:
+      - "8383:8000"
+    environment:
+      - PIHOLE_URL=${PIHOLE_URL}
+      - PIHOLE_PASSWORD=${PIHOLE_PASSWORD}
+    restart: unless-stopped 
