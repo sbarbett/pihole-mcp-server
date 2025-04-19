@@ -19,17 +19,13 @@ jobs:
       - name: Extract version from pyproject.toml
         id: get-version
         run: |
-          python3 -m pip install tomli
-          VERSION=$(python3 - << 'EOF'
-import tomli
-with open("pyproject.toml", "rb") as f:
-    data = tomli.load(f)
-print(data["project"]["version"])
-EOF
-)
+          VERSION=$(
+            grep '^version = ' pyproject.toml \
+            | head -n1 \
+            | sed -E 's/version = "([^"]+)"/\1/'
+          )
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "Extracted version: $VERSION"
-
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
