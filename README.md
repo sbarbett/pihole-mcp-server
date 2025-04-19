@@ -6,6 +6,7 @@ A Model Context Protocol (MCP) server for Pi-hole. This server exposes Pi-hole f
 
 - **ListLocalDNS**: Returns all local DNS settings from Pi-hole
 - **ListQueries**: Returns recent DNS query history from Pi-hole
+- **Multiple Pi-hole Support**: Manage up to 4 Pi-holes from a single MCP server
 - _...more to come..._
 
 ## Dependencies
@@ -14,12 +15,33 @@ A Model Context Protocol (MCP) server for Pi-hole. This server exposes Pi-hole f
 
 - [Docker install guide](https://docs.docker.com/engine/install/)
 
+### `uv` (Optional, for Development)
+
+If you want to run the application locally, use `uv`. Install it with your package manager of choice.
+
 ## Environment
 
 Create a `.env` file in the project root with your Pi-hole credentials:
+
 ```
+# Primary Pi-hole (required)
 PIHOLE_URL=https://your-pihole.local/
 PIHOLE_PASSWORD=your-admin-password
+#PIHOLE_NAME=Primary        # optional, defaults to URL if unset
+
+# Secondary Pi-hole (optional)
+#PIHOLE2_URL=https://secondary-pihole.local/
+#PIHOLE2_PASSWORD=password2
+#PIHOLE2_NAME=Secondary     # optional
+
+# Up to 4 Pi-holes:
+#PIHOLE3_URL=...
+#PIHOLE3_PASSWORD=...
+#PIHOLE3_NAME=...
+
+#PIHOLE4_URL=...
+#PIHOLE4_PASSWORD=...
+#PIHOLE4_NAME=...
 ```
 
 ## Docker Deployment
@@ -44,12 +66,39 @@ docker build -t pihole-mcp .
 docker run -p 8383:8000 --env-file .env -d pihole-mcp
 ```
 
+## Run Locally
+
+The Docker deployment uses SSE mode for two-way communication between the host and container. You could (theoretically) use STDIO mode with Docker exec. If you want to run it locally, though, you can simply run it with `uv`. This is particularly useful for quickly inspecting tools and resources with the inbuilt `mcp` dev utilities. For example:
+
+```
+uv run mcp dev main.py
+```
+
+Then in your web browser navigate to `http://localhost:6274`.
+
 ## API
 
-This MCP server exposes two tools:
+This MCP server exposes the following resources and tools:
 
-- `list_local_dns`: Lists all local DNS settings from Pi-hole
-- `list_queries`: Fetches the recent DNS query history from Pi-hole
+### Resources
+
+- `piholes://`: Returns information about all configured Pi-holes
+
+### Tools
+
+- `list_local_dns`: Lists all local DNS settings from Pi-hole(s)
+- `list_queries`: Fetches the recent DNS query history from Pi-hole(s)
+
+Each tool call returns results as a list of dictionaries with the following structure:
+```
+[
+  {
+    "pihole": "Pi-hole Name",
+    "data": [...]  # Result data from this Pi-hole
+  },
+  ...
+]
+```
 
 ## Testing in `goose`
 
