@@ -1,5 +1,4 @@
 version = 1
-revision = 1
 requires-python = ">=3.13"
 
 [[package]]
@@ -185,6 +184,7 @@ dependencies = [
     { name = "mcp", extra = ["cli"] },
     { name = "pihole6api" },
     { name = "python-dotenv" },
+    { name = "uvicorn" },
 ]
 
 [package.metadata]
@@ -192,6 +192,7 @@ requires-dist = [
     { name = "mcp", extras = ["cli"], specifier = ">=1.6.0" },
     { name = "pihole6api" },
     { name = "python-dotenv" },
+    { name = "uvicorn", specifier = ">=0.34.1" },
 ]
 
 [[package]]

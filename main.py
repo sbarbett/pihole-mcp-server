@@ -2,6 +2,7 @@ from mcp.server.fastmcp import FastMCP
 from pihole6api import PiHole6Client
 import os
 from dotenv import load_dotenv
+import uvicorn
 
 # Load environment variables from .env file
 load_dotenv()
@@ -31,6 +32,9 @@ def main():
     print("Starting Pi-hole MCP server...")
     mcp.run()
 
+# Expose the MCP server over HTTP/SSE
+app = mcp.sse_app()
 
 if __name__ == "__main__":
-    main()
+    # Serve on 0.0.0.0:8000 so all LAN clients can connect
+    uvicorn.run(app, host="0.0.0.0", port=8000)
