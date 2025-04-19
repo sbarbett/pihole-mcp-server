@@ -85,6 +85,49 @@ Try asking it: _"What are my local DNS records?"_
 
 ![Screenshot of queries](./img/recent-queries.jpg)
 
+## Claude Desktop
+
+Claude's desktop client currently only support's the STDIO protocol, however you can use a proxy to communicate with the SSE endpoint.
+
+Add the following to your `claude_desktop_config.json` file.
+
+```json
+{
+  "mcpServers": {
+    "pihole": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "http://localhost:8383/sse"
+      ]
+    }
+  }
+}
+```
+
+If you're connecting to a different host on your local network and using an unsecured connection, you'll need to explicitly allow it with the `--allow-http` argument. For example:
+
+```json
+{
+  "mcpServers": {
+    "pihole": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "http://192.168.1.255:8383/sse",
+        "--allow-http"
+      ]
+    }
+  }
+}
+```
+
+Afterwards, completely restart the application and try it out.
+
+![Claude DNS info](./img/claude-dns.png)
+
+![Claude query info](./img/claude-query.png)
+
 ## License
 
 [MIT](./LICENSE)
