@@ -1,0 +1,11 @@
+[project]
+name = "pihole-mcp-server"
+version = "0.1.0"
+description = "A Model Context Protocol server for Pi-hole"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "mcp[cli]>=1.6.0",
+    "pihole6api",
+    "python-dotenv",
+]
