@@ -79,7 +79,7 @@ goose session
 
 Try asking it: _"What are my local DNS records?"_
 
-![Screenshot of local DNS tool](./img/local-dns.jpg)
+![Screenshot of local DNS tool](./img/local-dns-2.jpg)
 
 ...or telling it: _"Show me my recent DNS queries."_
 
