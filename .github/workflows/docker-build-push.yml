@@ -20,7 +20,7 @@ jobs:
         id: get-version
         run: |
           python -m pip install tomli
-          VERSION=$(python -c "import tomli; print(tomli.loads(open('pyproject.toml', 'rb').read())['project']['version'])")
+          VERSION=$(python -c "import tomli; with open('pyproject.toml', 'rb') as f: print(tomli.load(f)['project']['version'])")
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "Extracted version: $VERSION"
 
