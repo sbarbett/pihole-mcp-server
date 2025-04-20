@@ -44,37 +44,77 @@ PIHOLE_PASSWORD=your-admin-password
 #PIHOLE4_NAME=...
 ```
 
-## Docker Deployment
+## Project Structure
 
-Run the Pi-hole MCP server in Docker.
-
-### Using Docker Compose
-
-1. Pull and start the container:
-   ```
-   docker-compose up -d
-   ```
-
-2. The server will be available at `http://localhost:8383`
-
-### Manual Docker Build
-
-Alternatively, you can build and run the Docker container manually:
+The project follows a modular organization for better maintainability:
 
 ```
-docker build -t pihole-mcp .
-docker run -p 8383:8000 --env-file .env -d pihole-mcp
+/
+├── main.py                # Main application entry point
+├── tools/                 # Pi-hole tools organized by functionality
+│   ├── __init__.py
+│   ├── config.py          # Configuration-related tools (DNS settings)
+│   └── metrics.py         # Metrics and query-related tools
+├── resources/             # MCP resources
+│   ├── __init__.py
+│   └── common.py          # Common resources (piholes://, version://)
+├── docker-compose.yml     # Docker Compose configuration for production
+├── docker-compose.dev.yml # Docker Compose for development with volume mounts
+└── Dockerfile             # Docker build configuration
 ```
 
-## Run Locally
+This structure separates the code into logical components while maintaining compatibility with all run modes.
 
-The Docker deployment uses SSE mode for two-way communication between the host and container. You could (theoretically) use STDIO mode with Docker exec. If you want to run it locally, though, you can simply run it with `uv`. This is particularly useful for quickly inspecting tools and resources with the inbuilt `mcp` dev utilities. For example:
+## Running the Server
 
+There are several ways to run the Pi-hole MCP server:
+
+### Using Docker (Recommended for Production)
+
+```bash
+# Standard deployment
+docker-compose up -d
 ```
+
+The server will be available at `http://localhost:8383`
+
+### Development Mode with Docker
+
+For development, use the dev compose file which sets up volume mounts for live code changes:
+
+```bash
+# Development mode with live reloading
+docker-compose -f docker-compose.dev.yml up
+```
+
+### Local Development
+
+For local development, you can run the server directly with `uv`:
+
+```bash
+# Interactive development UI (recommended for development)
 uv run mcp dev main.py
 ```
 
-Then in your web browser navigate to `http://localhost:6274`.
+This will start an interactive MCP development environment at `http://localhost:6274` where you can test tools and resources.
+
+To run the server directly:
+
+```bash
+# Run the server directly (HTTP/SSE mode)
+uv run python main.py
+```
+
+### CLI Mode (STDIO)
+
+For integration with MCP clients that use the STDIO protocol (like Claude Desktop):
+
+```bash
+# Run as an MCP STDIO server
+uv run mcp run main.py
+```
+
+**Note:** The server uses stderr for logging to avoid interfering with the STDIO protocol. Any log messages will appear in the terminal but won't disrupt the MCP communication.
 
 ## API
 
