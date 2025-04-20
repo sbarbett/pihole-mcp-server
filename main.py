@@ -90,6 +90,12 @@ def all_piholes() -> Dict[str, List[Dict[str, str]]]:
     return {"piholes": piholes_list}
 
 
+@mcp.resource("version://")
+def server_version() -> Dict[str, str]:
+    """Return the current version of the Pi-hole MCP server"""
+    return {"version": get_version()}
+
+
 @mcp.tool(name="list_local_dns", description="List local A and CNAME records from Pi-hole")
 def list_local_dns(piholes: Optional[List[str]] = None) -> List[Dict[str, Any]]:
     """
