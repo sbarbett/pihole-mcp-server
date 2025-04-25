@@ -1,4 +1,4 @@
-# pihole-mcp-serer
+# 🍓 pihole-mcp-serer
 
 A Model Context Protocol (MCP) server for Pi-hole. This server exposes Pi-hole functionality as tools that can be used by AI assistants.
 

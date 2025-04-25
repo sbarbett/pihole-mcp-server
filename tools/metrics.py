@@ -10,7 +10,7 @@ def register_tools(mcp, pihole_clients):
     @mcp.tool(name="list_queries", description="Fetch recent DNS query history with filtering options")
     def list_queries(
         piholes: Optional[List[str]] = None,
-        length: int = 100,
+        length: int = 10,
         from_ts: Optional[int] = None,
         until_ts: Optional[int] = None,
         upstream: Optional[str] = None,
@@ -21,14 +21,24 @@ def register_tools(mcp, pihole_clients):
         """
         Fetch the recent DNS query history from Pi-hole with filtering options
         
+        By default returns the most recent 100 queries, but this can be changed
+        using the length parameter. The results can be paginated using the cursor
+        parameter, which is returned with each query result.
+        
+        For domain and client_filter parameters, you can use wildcards (*) at any position
+        to match partial strings. For example:
+          - "*google*" would match any domain containing "google"
+          - "*.com" would match all .com domains
+          - "192.168.1.*" would match all clients in that subnet
+        
         Args:
             piholes: Optional list of Pi-hole names to query. If None, query all configured Pi-holes.
-            length: Number of queries to retrieve (default: 100)
+            length: Number of queries to retrieve (default: 10)
             from_ts: Unix timestamp to filter queries from this time onward
             until_ts: Unix timestamp to filter queries up to this time
-            upstream: Filter queries sent to a specific upstream destination
+            upstream: Filter queries sent to a specific upstream destination (may be "cache", "blocklist", or "permitted")
             domain: Filter queries for specific domains, supports wildcards (*)
-            client_filter: Filter queries originating from a specific client
+            client_filter: Filter queries originating from a specific client, supports wildcards (*)
             cursor: Cursor for pagination to fetch the next chunk of results
         """
         result = []
