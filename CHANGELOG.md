@@ -13,14 +13,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `add_local_cname_record`: Add local CNAME records to Pi-hole
   - `remove_local_a_record`: Delete all A records for a hostname with confirmation
   - `remove_local_cname_record`: Delete all CNAME records for a hostname with confirmation
-- Added safety confirmation feature for DNS deletion operations
-  - First request returns a preview of what will be removed
-  - Actual deletion requires explicit confirmation
+- Added token-based confirmation system for DNS deletion operations:
+  - First request returns a preview of changes and a unique confirmation token
+  - Actual deletion requires the exact confirmation token to proceed
+  - Tokens expire after 10 minutes for security
+  - Prevents LLM assistants from bypassing confirmation workflow
   - Prevents accidental data removal
   - Removal functions identify all records matching a hostname
   - By default, operations apply to all configured Pi-holes unless a specific one is specified
 - Added discovery resource for information on available tools
 - Improved docstrings for query functions to better document API usage
+- Added MCP prompt guide for LLMs to ensure proper usage of deletion confirmation workflow
+  - Detailed instructions on the token-based deletion process
+  - Examples of correct and incorrect usage patterns
+  - Automatic tool triggers for common user requests
 
 ## [0.2.0] - 2025-04-20
 

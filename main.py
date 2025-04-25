@@ -14,6 +14,7 @@ import logging
 # Import modular components
 from tools import config, metrics
 from resources import common, discovery
+from prompts import guide
 
 # Setup logging to stderr
 logging.basicConfig(
@@ -95,11 +96,12 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
-# Register resources and tools
+# Register resources, tools, and prompts
 common.register_resources(mcp, pihole_clients, get_version)
 discovery.register_resources(mcp)
 config.register_tools(mcp, pihole_clients)
 metrics.register_tools(mcp, pihole_clients)
+guide.register_prompt(mcp)
 
 def main():
     logger.info("Starting Pi-hole MCP server...")
