@@ -97,7 +97,7 @@ signal.signal(signal.SIGTERM, signal_handler)
 
 # Register resources and tools
 common.register_resources(mcp, pihole_clients, get_version)
-discovery.register_resources(mcp)  # Register discovery resource
+discovery.register_resources(mcp)
 config.register_tools(mcp, pihole_clients)
 metrics.register_tools(mcp, pihole_clients)
 

@@ -2,13 +2,6 @@
 
 A Model Context Protocol (MCP) server for Pi-hole. This server exposes Pi-hole functionality as tools that can be used by AI assistants.
 
-## Features
-
-- **ListLocalDNS**: Returns all local DNS settings from Pi-hole
-- **ListQueries**: Returns recent DNS query history from Pi-hole
-- **Multiple Pi-hole Support**: Manage up to 4 Pi-holes from a single MCP server
-- _...more to come..._
-
 ## Dependencies
 
 ### Docker
@@ -127,6 +120,10 @@ This MCP server exposes the following resources and tools:
 ### Tools
 
 - `list_local_dns`: Lists all local DNS settings from Pi-hole(s)
+- `add_local_a_record`: Adds a local A record to Pi-hole(s).
+- `add_local_cname_record`: Adds a local CNAME record to Pi-hole(s).
+- `remove_local_a_record`: Removes all A records for a hostname with confirmation.
+- `remove_local_cname_record`: Removes all CNAME records for a hostname with confirmation.
 - `list_queries`: Fetches the recent DNS query history from Pi-hole(s)
 
 Each tool call returns results as a list of dictionaries with the following structure:

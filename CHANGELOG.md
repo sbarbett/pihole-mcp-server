@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- New DNS management tools:
+  - `add_local_a_record`: Add local A records to Pi-hole
+  - `add_local_cname_record`: Add local CNAME records to Pi-hole
+  - `remove_local_a_record`: Delete all A records for a hostname with confirmation
+  - `remove_local_cname_record`: Delete all CNAME records for a hostname with confirmation
+- Added safety confirmation feature for DNS deletion operations
+  - First request returns a preview of what will be removed
+  - Actual deletion requires explicit confirmation
+  - Prevents accidental data removal
+  - Removal functions identify all records matching a hostname
+  - By default, operations apply to all configured Pi-holes unless a specific one is specified
+- Added discovery resource for information on available tools
+- Improved docstrings for query functions to better document API usage
+
 ## [0.2.0] - 2025-04-20
 
 ### Added
