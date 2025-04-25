@@ -13,7 +13,7 @@ import logging
 
 # Import modular components
 from tools import config, metrics
-from resources import common
+from resources import common, discovery
 
 # Setup logging to stderr
 logging.basicConfig(
@@ -97,6 +97,7 @@ signal.signal(signal.SIGTERM, signal_handler)
 
 # Register resources and tools
 common.register_resources(mcp, pihole_clients, get_version)
+discovery.register_resources(mcp)  # Register discovery resource
 config.register_tools(mcp, pihole_clients)
 metrics.register_tools(mcp, pihole_clients)
 
