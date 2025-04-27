@@ -73,41 +73,21 @@ The server will be available at `http://localhost:8383`
 
 ### Development Mode with Docker
 
-For development, use the dev compose file which sets up volume mounts for live code changes:
+For development, use the dev compose file which builds locally:
 
 ```bash
-# Development mode with live reloading
 docker-compose -f docker-compose.dev.yml up
 ```
 
-### Local Development
+### MCP Inspector
 
-For local development, you can run the server directly with `uv`:
+You can run the MCP inspector using `uv` and the `mcp` CLI:
 
 ```bash
-# Interactive development UI (recommended for development)
 uv run mcp dev main.py
 ```
 
-This will start an interactive MCP development environment at `http://localhost:6274` where you can test tools and resources.
-
-To run the server directly:
-
-```bash
-# Run the server directly (HTTP/SSE mode)
-uv run python main.py
-```
-
-### CLI Mode (STDIO)
-
-For integration with MCP clients that use the STDIO protocol (like Claude Desktop):
-
-```bash
-# Run as an MCP STDIO server
-uv run mcp run main.py
-```
-
-**Note:** The server uses stderr for logging to avoid interfering with the STDIO protocol. Any log messages will appear in the terminal but won't disrupt the MCP communication.
+This will start an interactive interface at `http://localhost:6274` where you can test tools and resources.
 
 ## API
 
@@ -116,15 +96,11 @@ This MCP server exposes the following resources and tools:
 ### Resources
 
 - `piholes://`: Returns information about all configured Pi-holes
+- `version://`: Returns the MCP server version
+- `list-tools://`: Returns a list of tool categories
+  - `list-tools://{category}`: Returns a list of tools within a specific category
 
 ### Tools
-
-- `list_local_dns`: Lists all local DNS settings from Pi-hole(s)
-- `add_local_a_record`: Adds a local A record to Pi-hole(s).
-- `add_local_cname_record`: Adds a local CNAME record to Pi-hole(s).
-- `remove_local_a_record`: Removes all A records for a hostname with confirmation.
-- `remove_local_cname_record`: Removes all CNAME records for a hostname with confirmation.
-- `list_queries`: Fetches the recent DNS query history from Pi-hole(s)
 
 Each tool call returns results as a list of dictionaries with the following structure:
 ```
@@ -136,6 +112,20 @@ Each tool call returns results as a list of dictionaries with the following stru
   ...
 ]
 ```
+
+#### Configuration
+
+- `list_local_dns`: Lists all local DNS settings from Pi-hole(s)
+- `add_local_a_record`: Adds a local A record to Pi-hole(s).
+- `add_local_cname_record`: Adds a local CNAME record to Pi-hole(s).
+- `remove_local_a_record`: Removes all A records for a hostname.
+- `remove_local_cname_record`: Removes all CNAME records for a hostname.
+
+#### Metrics
+
+- `list_queries`: Fetches the recent DNS query history from Pi-hole(s)
+- `list_query_suggestions`: Get query filter suggestions
+- `list_query_history`: Get activity graph data for queries over time
 
 ## Testing in `goose`
 
