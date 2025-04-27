@@ -36,10 +36,14 @@ def get_version() -> str:
             return pyproject_data["project"]["version"]
     except (FileNotFoundError, KeyError, tomli.TOMLDecodeError):
         # Fallback version if we can't read from pyproject.toml
-        return "0.1.0"
+        return "0.0.0"
 
 # Create MCP server
-mcp = FastMCP("PiHoleMCP", version=get_version())
+mcp = FastMCP(
+    "PiHoleMCP", 
+    version=get_version(),
+    instructions="You are a helpful assistant that can help with Pi-hole network management tasks."
+)
 
 # Initialize Pi-hole clients based on environment variables
 pihole_clients = {}

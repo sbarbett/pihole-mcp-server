@@ -5,7 +5,7 @@ Pi-hole MCP Server prompt guide for LLMs
 def register_prompt(mcp):
     """Register the Pi-hole MCP prompt guide with the server."""
     
-    @mcp.prompt()
+    @mcp.prompt(description="General instructions for LLM to follow")
     def pihole_mcp_prompt():
         return """
 # Pi-hole MCP: Network DNS Management Assistant

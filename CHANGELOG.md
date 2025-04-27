@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.2.1] - 2025-04-27
 
 ### Added
 - New DNS management tools:
@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `add_local_cname_record`: Add local CNAME records to Pi-hole
   - `remove_local_a_record`: Delete all A records for a hostname with confirmation
   - `remove_local_cname_record`: Delete all CNAME records for a hostname with confirmation
-- Added token-based confirmation system for DNS deletion operations:
+- Token-based confirmation system for DNS deletion operations:
   - First request returns a preview of changes and a unique confirmation token
   - Actual deletion requires the exact confirmation token to proceed
   - Tokens expire after 10 minutes for security
@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Detailed instructions on the token-based deletion process
   - Examples of correct and incorrect usage patterns
   - Automatic tool triggers for common user requests
+- Added resource and prompt descriptions, and FastMCP instructions
 
 ## [0.2.0] - 2025-04-20
 

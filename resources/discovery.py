@@ -7,7 +7,7 @@ from typing import Dict, List
 def register_resources(mcp):
     """Register tool discovery resources with the MCP server."""
     
-    @mcp.resource("list-tools://")
+    @mcp.resource("list-tools://", description="Return a list of all tool categories available in the Pi-hole MCP server")
     def list_tool_categories() -> List[Dict[str, str]]:
         """Return a list of all tool categories available in the Pi-hole MCP server.
         
@@ -21,7 +21,7 @@ def register_resources(mcp):
             {"name": "config", "description": "Configuration retrieval and updates"}
         ]
     
-    @mcp.resource("list-tools://{category}")
+    @mcp.resource("list-tools://{category}", description="Return a list of all tools in a specific category")
     def list_category_tools(category: str) -> List[Dict[str, str]]:
         """Return a list of all tools in a specific category.
         
