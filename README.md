@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/sbarbett-pihole-mcp-server-badge.png)](https://mseep.ai/app/sbarbett-pihole-mcp-server)
+
 # 🍓 pihole-mcp-serer
 
 A Model Context Protocol (MCP) server for Pi-hole. This server exposes Pi-hole functionality as tools that can be used by AI assistants.
