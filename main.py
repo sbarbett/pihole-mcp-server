@@ -12,7 +12,7 @@ import sys
 import logging
 
 # Import modular components
-from tools import config, metrics
+from tools import config, metrics, dns_control, dhcp, groups, domains, lists, clients, system, network
 from resources import common, discovery
 from prompts import guide
 
@@ -40,7 +40,7 @@ def get_version() -> str:
 
 # Create MCP server
 mcp = FastMCP(
-    "PiHoleMCP", 
+    "PiHoleMCP",
     version=get_version(),
     instructions="You are a helpful assistant that can help with Pi-hole network management tasks."
 )
@@ -73,11 +73,11 @@ sessions_closed = False
 # Function to close all Pi-hole client sessions
 def close_pihole_sessions():
     global sessions_closed
-    
+
     # Avoid closing sessions more than once
     if sessions_closed:
         return
-    
+
     logger.info("Closing Pi-hole client sessions...")
     for name, client in pihole_clients.items():
         try:
@@ -85,7 +85,7 @@ def close_pihole_sessions():
             logger.info(f"Successfully closed session for Pi-hole: {name}")
         except Exception as e:
             logger.error(f"Error closing session for Pi-hole {name}: {e}")
-    
+
     sessions_closed = True
 
 
@@ -105,6 +105,14 @@ common.register_resources(mcp, pihole_clients, get_version)
 discovery.register_resources(mcp)
 config.register_tools(mcp, pihole_clients)
 metrics.register_tools(mcp, pihole_clients)
+dns_control.register_tools(mcp, pihole_clients)
+dhcp.register_tools(mcp, pihole_clients)
+groups.register_tools(mcp, pihole_clients)
+domains.register_tools(mcp, pihole_clients)
+lists.register_tools(mcp, pihole_clients)
+clients.register_tools(mcp, pihole_clients)
+system.register_tools(mcp, pihole_clients)
+network.register_tools(mcp, pihole_clients)
 guide.register_prompt(mcp)
 
 def main():

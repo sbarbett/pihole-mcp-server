@@ -43,17 +43,30 @@ The project follows a modular organization for better maintainability:
 
 ```
 /
-├── main.py                # Main application entry point
-├── tools/                 # Pi-hole tools organized by functionality
+├── main.py                  # Main application entry point
+├── tools/                   # Pi-hole tools organized by functionality
 │   ├── __init__.py
-│   ├── config.py          # Configuration-related tools (DNS settings)
-│   └── metrics.py         # Metrics and query-related tools
-├── resources/             # MCP resources
+│   ├── confirmation.py      # Shared confirmation token utilities
+│   ├── config.py            # Configuration & local DNS record tools
+│   ├── metrics.py           # Query logs, statistics, and analytics tools
+│   ├── dns_control.py       # DNS blocking status control
+│   ├── dhcp.py              # DHCP lease management
+│   ├── groups.py            # Group management
+│   ├── domains.py           # Domain allow/deny list management
+│   ├── lists.py             # Blocklist/allowlist management
+│   ├── clients.py           # Client/device management
+│   ├── system.py            # System info, diagnostics, logs, and actions
+│   └── network.py           # Network device discovery and configuration
+├── resources/               # MCP resources
 │   ├── __init__.py
-│   └── common.py          # Common resources (piholes://, version://)
-├── docker-compose.yml     # Docker Compose configuration for production
-├── docker-compose.dev.yml # Docker Compose for development with volume mounts
-└── Dockerfile             # Docker build configuration
+│   ├── common.py            # Common resources (piholes://, version://)
+│   └── discovery.py         # Tool discovery resources (list-tools://)
+├── prompts/                 # MCP prompts
+│   ├── __init__.py
+│   └── guide.py             # LLM instruction guide
+├── docker-compose.yml       # Docker Compose configuration for production
+├── docker-compose.dev.yml   # Docker Compose for development with volume mounts
+└── Dockerfile               # Docker build configuration
 ```
 
 This structure separates the code into logical components while maintaining compatibility with all run modes.
@@ -113,19 +126,90 @@ Each tool call returns results as a list of dictionaries with the following stru
 ]
 ```
 
-#### Configuration
+All destructive operations (deletions) use a two-step confirmation token process: the first call returns a preview and a token, and the second call with the token performs the actual deletion.
+
+#### DNS Control
+
+- `get_blocking_status`: Get the current DNS blocking status
+- `set_blocking_status`: Enable or disable DNS blocking (with optional timer)
+
+#### Configuration & Local DNS
 
 - `list_local_dns`: Lists all local DNS settings from Pi-hole(s)
-- `add_local_a_record`: Adds a local A record to Pi-hole(s).
-- `add_local_cname_record`: Adds a local CNAME record to Pi-hole(s).
-- `remove_local_a_record`: Removes all A records for a hostname.
-- `remove_local_cname_record`: Removes all CNAME records for a hostname.
+- `add_local_a_record`: Adds a local A record to Pi-hole(s)
+- `add_local_cname_record`: Adds a local CNAME record to Pi-hole(s)
+- `remove_local_a_record`: Removes all A records for a hostname (with confirmation)
+- `remove_local_cname_record`: Removes all CNAME records for a hostname (with confirmation)
+- `get_config`: Get Pi-hole configuration settings (full or by section)
+- `update_config`: Update Pi-hole configuration settings
 
-#### Metrics
+#### Metrics & Statistics
 
-- `list_queries`: Fetches the recent DNS query history from Pi-hole(s)
+- `list_queries`: Fetches the recent DNS query history with filtering
 - `list_query_suggestions`: Get query filter suggestions
 - `list_query_history`: Get activity graph data for queries over time
+- `get_stats_summary`: Get activity overview (total queries, blocked, percentage, etc.)
+- `get_top_domains`: Get top queried or blocked domains
+- `get_top_clients`: Get top DNS query clients
+- `get_stats_upstreams`: Get upstream DNS server statistics
+- `get_query_types`: Get DNS query type distribution (A, AAAA, PTR, etc.)
+- `get_recent_blocked`: Get recently blocked domains
+- `get_history_clients`: Get per-client activity history over time
+- `get_database_stats`: Get long-term database statistics for a time range
+
+#### DHCP
+
+- `get_dhcp_leases`: Get active DHCP leases
+- `remove_dhcp_lease`: Remove a DHCP lease by IP address
+
+#### Group Management
+
+- `get_groups`: Get all groups
+- `add_group`: Add a new group
+- `update_group`: Update an existing group
+- `delete_group`: Delete a group (with confirmation)
+
+#### Domain Management (Allow/Deny)
+
+- `get_domains`: Get all allow/deny domain entries
+- `add_domain`: Add a domain to the allow or deny list (exact or regex)
+- `update_domain`: Update an existing domain entry
+- `delete_domain`: Delete a domain entry (with confirmation)
+
+#### List Management (Blocklists/Allowlists)
+
+- `get_lists`: Get all blocklists and allowlists
+- `add_list`: Add a blocklist or allowlist URL
+- `update_list`: Update an existing list entry
+- `delete_list`: Delete a list entry (with confirmation)
+- `search_list`: Search for a domain across all lists
+
+#### Client Management
+
+- `get_clients`: Get all configured clients
+- `get_client_suggestions`: Get suggested clients from known network devices
+- `add_client`: Add a client for group-based management
+- `update_client`: Update an existing client entry
+- `delete_client`: Delete a client (with confirmation)
+
+#### System Info & Actions
+
+- `get_system_info`: Get comprehensive system information (version, host, FTL, sensors, metrics)
+- `get_pihole_version`: Get Pi-hole version details
+- `get_padd_summary`: Get PADD-style dashboard summary
+- `get_diagnosis_messages`: Get diagnostic/warning messages
+- `get_database_info`: Get long-term database statistics
+- `get_logs`: Get Pi-hole logs (dnsmasq, FTL, or webserver)
+- `run_gravity`: Re-download and process all blocklists
+- `restart_dns`: Restart the FTL DNS resolver
+- `flush_arp`: Flush the network table (ARP cache)
+- `flush_logs`: Flush DNS query logs
+
+#### Network
+
+- `get_network_devices`: Get network devices discovered by Pi-hole
+- `delete_network_device`: Remove a device from the network table
+- `get_network_info`: Get gateway, interfaces, and routes
 
 ## Testing in `goose`
 
