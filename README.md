@@ -69,7 +69,14 @@ There are several ways to run the Pi-hole MCP server:
 docker-compose up -d
 ```
 
-The server will be available at `http://localhost:8383`
+The server exposes the **Streamable HTTP** MCP transport at `http://localhost:8383/mcp`.
+
+> **Remote access:** Streamable HTTP enforces DNS-rebinding protection and by
+> default only accepts requests with a `localhost`/`127.0.0.1` Host header. To
+> connect from another host (or via a hostname), set `MCP_ALLOWED_HOSTS` to a
+> comma-separated list of the Host header(s) clients will send, e.g.
+> `MCP_ALLOWED_HOSTS=pihole-mcp.local:8383,192.168.1.2:8383`. Otherwise the
+> server responds `421 Misdirected Request`.
 
 ### Development Mode with Docker
 
@@ -139,7 +146,7 @@ The following assumes you've completed the initial setup with `goose configure`.
 2. Select **Add Extension**
 3. Select **Remote Extension**
 4. It will ask for a name. It doesn't matter what you name it. I called mine `pihole-mcp`.
-5. When it asks _"What is the SSE endpoint URI?"_ enter `http://localhost:8383/sse`.
+5. When it asks for the endpoint URI, enter `http://localhost:8383/mcp` (Streamable HTTP transport).
 6. Enter a timeout.
 7. Add a description if you'd like.
 8. Select **No** when it asks about environment variables.
@@ -163,7 +170,7 @@ Try asking it: _"What are my local DNS records?"_
 
 ## Claude Desktop
 
-Claude's desktop client currently only support's the STDIO protocol, however you can use a proxy to communicate with the SSE endpoint.
+Claude's desktop client currently only support's the STDIO protocol, however you can use a proxy to communicate with the Streamable HTTP endpoint.
 
 Add the following to your `claude_desktop_config.json` file.
 
@@ -174,7 +181,7 @@ Add the following to your `claude_desktop_config.json` file.
       "command": "npx",
       "args": [
         "mcp-remote",
-        "http://localhost:8383/sse"
+        "http://localhost:8383/mcp"
       ]
     }
   }
@@ -190,7 +197,7 @@ If you're connecting to a different host on your local network and using an unse
       "command": "npx",
       "args": [
         "mcp-remote",
-        "http://192.168.1.255:8383/sse",
+        "http://192.168.1.255:8383/mcp",
         "--allow-http"
       ]
     }
