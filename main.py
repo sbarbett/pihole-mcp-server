@@ -1,4 +1,5 @@
 from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
 from pihole6api import PiHole6Client
 import os
 import tomli
@@ -39,10 +40,22 @@ def get_version() -> str:
         return "0.0.0"
 
 # Create MCP server
+# Streamable HTTP enforces DNS-rebinding protection (localhost only) by default.
+# To reach the server from another host, list the Host header(s) clients will send
+# in MCP_ALLOWED_HOSTS (comma-separated), e.g. "pihole-mcp.local:8383,192.168.1.2:8383".
+_allowed_hosts = os.getenv("MCP_ALLOWED_HOSTS")
+_transport_security = (
+    TransportSecuritySettings(
+        allowed_hosts=[h.strip() for h in _allowed_hosts.split(",") if h.strip()]
+    )
+    if _allowed_hosts
+    else None
+)
+
 mcp = FastMCP(
-    "PiHoleMCP", 
-    version=get_version(),
-    instructions="You are a helpful assistant that can help with Pi-hole network management tasks."
+    "PiHoleMCP",
+    instructions="You are a helpful assistant that can help with Pi-hole network management tasks.",
+    transport_security=_transport_security,
 )
 
 # Initialize Pi-hole clients based on environment variables
@@ -112,7 +125,7 @@ def main():
     mcp.run()
 
 # Expose the MCP server over HTTP/SSE
-app = mcp.sse_app()
+app = mcp.streamable_http_app()
 
 if __name__ == "__main__":
     # Serve on 0.0.0.0:8000 so all LAN clients can connect
