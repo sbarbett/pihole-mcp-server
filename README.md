@@ -35,6 +35,19 @@ PIHOLE_PASSWORD=your-admin-password
 #PIHOLE4_URL=...
 #PIHOLE4_PASSWORD=...
 #PIHOLE4_NAME=...
+
+# Unbound resolver(s) behind Pi-hole (optional — enables the unbound_* tools).
+# Requires Unbound remote-control over TLS (see "Unbound remote control" below).
+#UNBOUND_HOST=192.168.1.2
+#UNBOUND_PORT=8953                 # optional, default 8953
+#UNBOUND_NAME=dns01                # optional, defaults to host
+#UNBOUND_CONTROL_CERT=/certs/unbound_control.pem
+#UNBOUND_CONTROL_KEY=/certs/unbound_control.key
+#UNBOUND_SERVER_CERT=/certs/unbound_server.pem
+# Additional resolvers (up to 4): UNBOUND2_*, UNBOUND3_*, UNBOUND4_*
+# (cert paths fall back to the primary's when omitted)
+#UNBOUND2_HOST=192.168.1.3
+#UNBOUND2_NAME=dns02
 ```
 
 ## Project Structure
@@ -47,7 +60,9 @@ The project follows a modular organization for better maintainability:
 ├── tools/                 # Pi-hole tools organized by functionality
 │   ├── __init__.py
 │   ├── config.py          # Configuration-related tools (DNS settings)
-│   └── metrics.py         # Metrics and query-related tools
+│   ├── metrics.py         # Metrics and query-related tools
+│   ├── blocking.py        # Blocking, adlist, and allow/deny domain-rule tools
+│   └── unbound.py         # Unbound recursive-resolver control tools (optional)
 ├── resources/             # MCP resources
 │   ├── __init__.py
 │   └── common.py          # Common resources (piholes://, version://)
@@ -126,6 +141,60 @@ Each tool call returns results as a list of dictionaries with the following stru
 - `list_queries`: Fetches the recent DNS query history from Pi-hole(s)
 - `list_query_suggestions`: Get query filter suggestions
 - `list_query_history`: Get activity graph data for queries over time
+
+#### Blocking
+
+- `get_blocking_status`: Get ad-blocking status (enabled/disabled and any timer)
+- `set_blocking`: Enable/disable ad-blocking, optionally for a number of seconds
+- `list_blocklists`: List adlists (`block` or `allow`)
+- `add_blocklist`: Add an adlist by URL
+- `remove_blocklist`: Remove an adlist by URL
+- `update_gravity`: Rebuild blocklists (apply adlist changes)
+- `add_domain_rule`: Add an allow/deny domain rule (`exact` or `regex`)
+- `remove_domain_rule`: Remove an allow/deny domain rule
+- `get_domain_rule`: Look up an allow/deny domain rule
+
+#### Unbound
+
+Controls the Unbound recursive resolver(s) behind Pi-hole over Unbound's
+remote-control interface (see [Unbound remote control](#unbound-remote-control)).
+Enabled when `UNBOUND_HOST` is set. Each result is `{"unbound": name, "ok": bool, ...}`.
+
+- `unbound_status`: Resolver status (version, threads, uptime, modules)
+- `unbound_stats`: Resolver statistics (queries, cache hits/misses, recursion times)
+- `unbound_flush_domain`: Flush a single domain from the resolver cache
+- `unbound_flush_zone`: Flush a zone (pass `.` for the whole cache)
+- `unbound_reload`: Reload config and flush the cache
+- `unbound_list_local_zones` / `unbound_list_local_data`: List resolver-level overrides
+- `unbound_add_local_data` / `unbound_remove_local_data`: Manage resolver-level DNS overrides
+- `unbound_list_forwards`: List forward-zones
+
+## Unbound remote control
+
+The `unbound_*` tools connect to Unbound's remote-control interface over TLS.
+Enable it in `unbound.conf`:
+
+```
+remote-control:
+    control-enable: yes
+    control-interface: 127.0.0.1        # keep a local interface for unbound-control
+    control-interface: 0.0.0.0          # or a specific LAN IP this server can reach
+    control-port: 8953
+    control-use-cert: yes
+```
+
+> **Important:** do not keep a UNIX-socket `control-interface` (a path such as
+> `/run/unbound.ctl`) alongside the TCP interface. If *any* control-interface is
+> a UNIX socket, Unbound runs the entire control facility **without TLS**
+> (`unbound-control status` reports `control(namedpipe)`) and the TCP port
+> answers in plaintext, so TLS handshakes are refused. Use IP-address interfaces
+> only — add `127.0.0.1` so local `unbound-control` keeps working — and confirm
+> `unbound-control status` reports `control(ssl)`.
+
+Run `unbound-control-setup` once to generate `unbound_server.pem`,
+`unbound_control.pem` and `unbound_control.key` in Unbound's directory and
+restart Unbound. Copy those three files to wherever this server runs and point
+the `UNBOUND_*` env vars at them.
 
 ## Testing in `goose`
 
