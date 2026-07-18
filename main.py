@@ -12,7 +12,7 @@ import sys
 import logging
 
 # Import modular components
-from tools import config, metrics
+from tools import config, metrics, blocking, unbound
 from resources import common, discovery
 from prompts import guide
 
@@ -105,6 +105,8 @@ common.register_resources(mcp, pihole_clients, get_version)
 discovery.register_resources(mcp)
 config.register_tools(mcp, pihole_clients)
 metrics.register_tools(mcp, pihole_clients)
+blocking.register_tools(mcp, pihole_clients)
+unbound.register_tools(mcp, pihole_clients)
 guide.register_prompt(mcp)
 
 def main():
