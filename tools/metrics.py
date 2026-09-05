@@ -49,15 +49,29 @@ def register_tools(mcp, pihole_clients):
         for name in targets:
             client = pihole_clients[name]
             try:
-                data = client.metrics.get_queries(
-                    length=length,
-                    from_ts=from_ts,
-                    until_ts=until_ts,
-                    upstream=upstream,
-                    domain=domain,
-                    client=client_filter,  # Use client_filter to avoid name conflict with client variable
-                    cursor=cursor
-                )
+                if client_filter is None:
+                    data = client.metrics.get_queries(
+                        length=length,
+                        from_ts=from_ts,
+                        until_ts=until_ts,
+                        upstream=upstream,
+                        domain=domain,
+                        cursor=cursor
+                    )
+                else:
+                    params = {
+                        "length": length,
+                        "from": from_ts,
+                        "until": until_ts,
+                        "upstream": upstream,
+                        "domain": domain,
+                        "client_ip": client_filter,
+                        "cursor": cursor,
+                    }
+                    params = {key: value for key, value in params.items() if value is not None}
+                    # pihole6api.get_queries() sends the client filter as "client",
+                    # while Pi-hole's /api/queries endpoint expects "client_ip".
+                    data = client.connection.get("queries", params=params)
                 result.append({"pihole": name, "data": data})
             except Exception as e:
                 result.append({"pihole": name, "error": str(e)})
